@@ -7,5 +7,5 @@ Envsets are scripts which contain a specific set of UPS products which can be us
 
 ## Muse repo link order file
 
-##definitions of musings
+## definitions of musings
 A musing is a set of repos that are built together by Muse, then published on cvmfs
