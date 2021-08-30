@@ -1,32 +1,17 @@
-# Prerequisites
-*.d
-
-# Compiled Object files
-*.slo
-*.lo
+*~
+\#*
+.sconsign.dblite
+*.stn
+*.hist
 *.o
-*.obj
-
-# Precompiled Headers
-*.gch
-*.pch
-
-# Compiled Dynamic libraries
 *.so
-*.dylib
-*.dll
-
-# Fortran module files
-*.mod
-*.smod
-
-# Compiled Static libraries
-*.lai
-*.la
-*.a
-*.lib
-
-# Executables
-*.exe
-*.out
-*.app
+*.os
+*.root
+*.art
+*.log
+*.log.*
+*.pdf
+*.pyc
+*.orig
+*.swp
+compile_commands.json
