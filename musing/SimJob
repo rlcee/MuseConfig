@@ -1,6 +1,4 @@
-# SimJob depends on Offline and Production
+# SimJob is a pairing of Production and Offline
 #
-MDC2020h  link/Offline/v10_03_00  link/Production/v00_00_01
-MDC2020i  link/Offline/v10_03_00  link/Production/v00_01_01
-MDC2020j  link/Offline/v10_03_00  link/Production/v00_02_00
-MDC2020k  link/Offline/v10_06_00  link/Production/v00_03_02
+MDC2020q  Production/v00_09_00   backing/Offline/v10_15_00
+MDC2020r  Production/v00_09_02   backing/Offline/v10_15_01
