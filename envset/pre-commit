@@ -35,7 +35,10 @@ geomReg=".*/geom.*\.txt$"
 for name in $names
 do
   ext=$(echo $name | awk -F. '{print $NF}' )
+  bname=$( basename $name )
   if [[ "$ext" == "hh" || "$ext" == "cc" || "$ext" == "fcl" \
+      || "$ext" == "C" ||  "$ext" == "h" || "$ext" == "mac" \
+      || "$ext" == "icc" || "$bname" == "SConscript" \
       || "$name" =~ $geomReg ]]; then
 
       # check whitespace and return non-zero if not allowed
