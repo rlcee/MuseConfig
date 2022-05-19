@@ -31,12 +31,17 @@ fi
 names=$( git diff --cached --name-only --diff-filter=AM  $against )
 
 rc=0
-geomReg=".*/geom.*\.txt$"
+geomReg1=".*/geom[^/]*\.txt$"
+geomReg2="Mu2eG4/geom/.*\.txt$"
 for name in $names
 do
-  ext=$(echo $name | awk -F. '{print $NF}' )
+  bname=$( basename $name )
+  ext=$(echo $bname | awk -F. '{if(NF==1) print ""; else print $NF};' )
   if [[ "$ext" == "hh" || "$ext" == "cc" || "$ext" == "fcl" \
-      || "$name" =~ $geomReg ]]; then
+      || "$ext" == "C" ||  "$ext" == "h" || "$ext" == "icc" \
+      || "$ext" == "mac" || "$ext" == "sh" || "$ext" == "py" || "$ext" == "pl" \
+      || "$bname" == "SConscript" \
+      || "$name" =~ $geomReg1 || "$name" =~ $geomReg2 ]]; then
 
       # check whitespace and return non-zero if not allowed
       git diff-index --check --cached $against $name
