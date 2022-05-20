@@ -6,11 +6,9 @@
 # it wants to stop the commit.
 #
 # this script has a second mode which is called from CI.
-# in this case it has two arguments:
-# args:
-#  $1 the branch to be checked
-#  $2  the branch to checked against, like mu2e/main
-# and the checks will be run comparing these two branches
+# in this case it has an argument:
+#  $1  the branch to checked against, like mu2e/main
+# and the checks will be run comparing the checked out branch
 # this mode assumes the default directory is Offline
 
 if [ $# -eq 1 ]; then
