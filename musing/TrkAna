@@ -1,4 +1,4 @@
 # TrkAna ntuple repo depends on Production and Offline
 #
 v01_00_00a   TrkAna/v01_00_00  backing/Production/v00_07_00
-v01_01_00    TrkAna/v01_01_00  backing/Production/v00_08_00
+v01_01_00    TrkAna/v01_01_00  backing/SimJob/MDC2020r
