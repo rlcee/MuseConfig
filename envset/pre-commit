@@ -5,30 +5,52 @@
 # exit with non-zero status after issuing an appropriate message if
 # it wants to stop the commit.
 #
+# this script has a second mode which is called from CI.
+# in this case it has two arguments:
+# args:
+#  $1 the branch to be checked
+#  $2  the branch to checked against, like mu2e/main
+# and the checks will be run comparing these two branches
+# this mode assumes the default directory is Offline
 
-if git rev-parse --verify HEAD >/dev/null 2>&1
-then
-    against=HEAD
+if [ $# -eq 1 ]; then
+    cimode=true
+    against="$1"
 else
-    # Initial commit: diff against an empty tree object
-    against=$(git hash-object -t tree /dev/null)
+    cimode=""
 fi
 
-# Redirect output to stderr.
-exec 1>&2
+if [ $cimode ]; then
 
-# Cross platform projects tend to avoid non-ASCII filenames; prevent
-# them from being added to the repository. We exploit the fact that the
-# printable range starts at the space character and ends with tilde.
-badchar=$(git diff --cached --name-only --diff-filter=A  $against | \
-      LC_ALL=C tr -d 'A-Za-z0-9/\n_.-' | wc -c)
-if [ $badchar != 0 ]
-then
-    echo "Check failed: cannot add a file name with non-ASCII or blank char."
-    exit 1
+    git config --local core.whitespace  trailing-space,tab-in-indent
+    names=$( git diff --name-only $against )
+
+else
+    if git rev-parse --verify HEAD >/dev/null 2>&1
+    then
+        against=HEAD
+    else
+        # Initial commit: diff against an empty tree object
+        against=$(git hash-object -t tree /dev/null)
+    fi
+
+    # Redirect output to stderr.
+    exec 1>&2
+
+    # Cross platform projects tend to avoid non-ASCII filenames; prevent
+    # them from being added to the repository. We exploit the fact that the
+    # printable range starts at the space character and ends with tilde.
+    badchar=$(git diff --cached --name-only --diff-filter=A  $against | \
+        LC_ALL=C tr -d 'A-Za-z0-9/\n_.-' | wc -c)
+    if [ $badchar != 0 ]
+    then
+        echo "Check failed: cannot add a file name with non-ASCII or blank char."
+        exit 1
+    fi
+
+    names=$( git diff --cached --name-only --diff-filter=AM  $against )
+
 fi
-
-names=$( git diff --cached --name-only --diff-filter=AM  $against )
 
 rc=0
 geomReg1=".*/geom[^/]*\.txt$"
@@ -44,7 +66,11 @@ do
       || "$name" =~ $geomReg1 || "$name" =~ $geomReg2 ]]; then
 
       # check whitespace and return non-zero if not allowed
-      git diff-index --check --cached $against $name
+      if [ $cimode ]; then
+          git diff --check $against $name
+      else
+          git diff-index --check --cached $against $name
+      fi
       [ $? -ne 0 ] && rc=1
 
       if [[ $(tail -c1 "$name" | wc -l) -eq 0 ]]; then
@@ -56,7 +82,11 @@ do
 done
 
 if [ $rc -ne 0 ] ; then
-   echo "Pre-commit check detected format errors, please fix and try to commit again"
+    if [ $cimode ]; then
+        echo "Whitespace check detected format errors"
+    else
+        echo "Pre-commit check detected format errors, please fix and try to commit again"
+    fi
 fi
 
 exit $rc
