@@ -65,13 +65,16 @@ do
 
       # check whitespace and return non-zero if not allowed
       if [ $cimode ]; then
-          git diff --check $against $name
+          if [ -r $name ]; then
+              git diff --check $against $name
+              [ $? -ne 0 ] && rc=1
+          fi
       else
           git diff-index --check --cached $against $name
+          [ $? -ne 0 ] && rc=1
       fi
-      [ $? -ne 0 ] && rc=1
 
-      if [[ $(tail -c1 "$name" | wc -l) -eq 0 ]]; then
+      if [[ -e "$name" && $(tail -c1 "$name" | wc -l) -eq 0 ]]; then
           echo "Commit check failed: $name does not have a terminal newline"
           rc=1
       fi
