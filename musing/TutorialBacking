@@ -1,4 +1,4 @@
 # Tutorial Backing repo depends on Production and Offline and it
 # contains REve and TrkAna.  Tutorial is built with this as a backing release.
 #
-v01    TrkAna/v04_01_00   REve/v4_00_00   backing/SimJob/MDC2020z1
+v01_00_00   TrkAna/v04_01_00   REve/v4_00_00   backing/SimJob/MDC2020z1
