@@ -14,7 +14,7 @@ fi
 #
 if [ -z "$MUSE_COMPILER_E" ]; then
     export MUSE_COMPILER_E=e28
-    if [ $MUSE_VERBOSE -gt 0 ]; then 
+    if [ $MUSE_VERBOSE -gt 0 ]; then
         echo "INFO - MUSE_COMPILER_E defaulting to $MUSE_COMPILER_E in $MUSE_ENVSET"
     fi
 fi
@@ -24,7 +24,7 @@ fi
 #
 if [ -z "$MUSE_PYTHON" ]; then
     export MUSE_PYTHON=p3915
-    if [ $MUSE_VERBOSE -gt 0 ]; then 
+    if [ $MUSE_VERBOSE -gt 0 ]; then
         echo "INFO - MUSE_PYTHON defaulting to $MUSE_PYTHON in $MUSE_ENVSET"
     fi
 fi
@@ -33,13 +33,13 @@ fi
 # build tools
 setup cetpkgsupport v1_14_01
 setup -B  cetbuildtools   v8_18_11
-setup -B  valgrind   v3_21_0 
+setup -B  valgrind   v3_21_0
 
 # art 
 # these three lines must be coordinated
-setup -B art_root_io v1_12_04 -q${MUSE_BUILD}:+${MUSE_COMPILER_E}
-export MUSE_ART=s124
-setup -B  gallery   v1_21_03  -q+${MUSE_BUILD}:+${MUSE_COMPILER_E}
+setup -B art_root_io v1_13_01 -q${MUSE_BUILD}:+${MUSE_COMPILER_E}
+export MUSE_ART=s126
+setup -B  gallery   v1_22_01  -q+${MUSE_BUILD}:+${MUSE_COMPILER_E}
 complete -F _art -o filenames -A file mu2e
 
 #
@@ -56,7 +56,7 @@ if [ "$MUSE_G4VIS" == "qt" ]; then
    GFLAGS=${GFLAGS}:+qt
 fi
 
-setup -B geant4 v4_11_1_p02a -q${GFLAGS}
+setup -B geant4 v4_11_1_p02b -q${GFLAGS}
 
 #
 # everything else
@@ -64,8 +64,8 @@ setup -B geant4 v4_11_1_p02a -q${GFLAGS}
 
 setup -B xerces_c v3_2_3e   -q +${MUSE_COMPILER_E}
 setup -B artdaq_core_mu2e v2_01_02 -q +${MUSE_BUILD}:+${MUSE_COMPILER_E}:+${MUSE_ART}
-setup -B BTrk   v1_02_44  -q +${MUSE_BUILD}:+${MUSE_COMPILER_E}:+${MUSE_PYTHON}
-setup -B KinKal  v02_05_00  -q +${MUSE_BUILD}:+${MUSE_COMPILER_E}:+${MUSE_PYTHON}
+setup -B BTrk   v1_02_45  -q +${MUSE_BUILD}:+${MUSE_COMPILER_E}:+${MUSE_PYTHON}
+setup -B KinKal  v02_05_00a  -q +${MUSE_BUILD}:+${MUSE_COMPILER_E}:+${MUSE_PYTHON}
 setup -B cry   v1_7q  -q +${MUSE_BUILD}:+${MUSE_COMPILER_E}
 setup -B gsl v2_7
 setup curl v7_64_1

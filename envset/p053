@@ -63,7 +63,7 @@ setup -B geant4 v4_11_1_p02a -q${GFLAGS}
 #
 
 setup -B xerces_c v3_2_3e   -q +${MUSE_COMPILER_E}
-setup -B artdaq_core_mu2e v2_01_02 -q +${MUSE_BUILD}:+${MUSE_COMPILER_E}:+${MUSE_ART}
+setup -B artdaq_core_mu2e v2_00_00 -q +${MUSE_BUILD}:+${MUSE_COMPILER_E}:+${MUSE_ART}
 setup -B BTrk   v1_02_44  -q +${MUSE_BUILD}:+${MUSE_COMPILER_E}:+${MUSE_PYTHON}
 setup -B KinKal  v02_05_00  -q +${MUSE_BUILD}:+${MUSE_COMPILER_E}:+${MUSE_PYTHON}
 setup -B cry   v1_7q  -q +${MUSE_BUILD}:+${MUSE_COMPILER_E}
