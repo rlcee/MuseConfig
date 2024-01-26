@@ -2,4 +2,4 @@
 # contains REve and TrkAna.  Tutorial is built with this as a backing release.
 #
 v01_00_00   TrkAna/v04_01_00   REve/v4_00_00     backing/SimJob/MDC2020z1
-v02_00_00   TrkAna/v04_02_00   REve/v4_00_00ab   backing/SimJob/MDC2020ab
+v02_00_00   TrkAna/v04_02_00   REve/v5_00_00     backing/SimJob/MDC2020ab
