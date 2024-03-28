@@ -65,7 +65,7 @@ if [ ! "$MU2E_SPACK" ]; then
     setup -B xerces_c v3_2_3e   -q +${MUSE_COMPILER_E}
     setup -B artdaq_core_mu2e v2_01_03 -q +${MUSE_BUILD}:+${MUSE_COMPILER_E}:+${MUSE_ART}
     setup -B BTrk v1_02_46  -q +${MUSE_BUILD}:+${MUSE_COMPILER_E}:+${MUSE_PYTHON}
-    setup -B KinKal v02_05_00b -q +${MUSE_BUILD}:+${MUSE_COMPILER_E}:+${MUSE_PYTHON}
+    setup -B KinKal v03_00_01 -q +${MUSE_BUILD}:+${MUSE_COMPILER_E}:+${MUSE_PYTHON}
     setup -B cry   v1_7q  -q +${MUSE_BUILD}:+${MUSE_COMPILER_E}
     setup -B gsl v2_7
     setup curl v7_64_1
@@ -100,7 +100,7 @@ if [ "$MUSE_FLAVOR" == "sl7" ]; then
     spack env activate mu2e-3-14-03-sl7-e28-prof-1
 elif [ "$MUSE_FLAVOR" == "al9" ]; then
 #    spack load scons/s4ccopl
-    spack env activate mu2e-3-14-03-al9-e28-prof-2
+    spack env activate mu2e-3-14-03-al9-e28-prof-3
 fi
 # this doesn't work yet
 #complete -F _art -o filenames -A file mu2e
