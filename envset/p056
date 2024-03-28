@@ -1,0 +1,224 @@
+#
+# set this if needed, as a convenience, when this is sourced outside of muse
+#
+[ ! "$MUSE_VERBOSE" ] && MUSE_VERBOSE=0
+#
+#
+# use preferred build type, if none requested
+#
+if [ -z "$MUSE_BUILD" ]; then
+    export MUSE_BUILD=prof
+    if [ $MUSE_VERBOSE -gt 0 ]; then
+        echo "INFO - MUSE_BUILD defaulting to $MUSE_BUILD in $MUSE_ENVSET"
+    fi
+fi
+
+#
+# use preferred compiler, if none requested
+#
+if [ -z "$MUSE_COMPILER_E" ]; then
+    export MUSE_COMPILER_E=e28
+    if [ $MUSE_VERBOSE -gt 0 ]; then
+        echo "INFO - MUSE_COMPILER_E defaulting to $MUSE_COMPILER_E in $MUSE_ENVSET"
+    fi
+fi
+
+#
+# use preferred python flag, if none requested
+#
+if [ -z "$MUSE_PYTHON" ]; then
+    export MUSE_PYTHON=p3915
+    if [ $MUSE_VERBOSE -gt 0 ]; then
+        echo "INFO - MUSE_PYTHON defaulting to $MUSE_PYTHON in $MUSE_ENVSET"
+    fi
+fi
+
+#
+# geant4
+#
+GFLAGS=+${MUSE_BUILD}:+${MUSE_COMPILER_E}
+if [ -z "$MUSE_G4ST" ]; then
+   GFLAGS=${GFLAGS}:+mt
+fi
+if [ -n "$MUSE_G4VG" ]; then
+   GFLAGS=${GFLAGS}:+vg
+fi
+if [ "$MUSE_G4VIS" == "qt" ]; then
+   GFLAGS=${GFLAGS}:+qt
+fi
+
+if [ ! "$MU2E_SPACK" ]; then
+
+    # build tools
+    setup cetmodules v3_22_02
+    setup -B  valgrind   v3_21_0
+
+    # art
+    # these three lines must be coordinated
+    setup -B art_root_io v1_13_03 -q${MUSE_BUILD}:+${MUSE_COMPILER_E}
+    export MUSE_ART=s128
+    setup -B  gallery   v1_22_03  -q+${MUSE_BUILD}:+${MUSE_COMPILER_E}
+    complete -F _art -o filenames -A file mu2e
+
+    setup -B geant4 v4_11_1_p02d -q${GFLAGS}
+
+    setup -B xerces_c v3_2_3e   -q +${MUSE_COMPILER_E}
+    setup -B artdaq_core_mu2e v2_01_03 -q +${MUSE_BUILD}:+${MUSE_COMPILER_E}:+${MUSE_ART}
+    setup -B BTrk v1_02_46  -q +${MUSE_BUILD}:+${MUSE_COMPILER_E}:+${MUSE_PYTHON}
+    setup -B KinKal v03_00_01 -q +${MUSE_BUILD}:+${MUSE_COMPILER_E}:+${MUSE_PYTHON}
+    setup -B cry   v1_7q  -q +${MUSE_BUILD}:+${MUSE_COMPILER_E}
+    setup -B gsl v2_7
+    setup curl v7_64_1
+    setup -B scons v4_4_0  -q +${MUSE_PYTHON}
+    setup -B gdb v13_1
+    setup -B swig
+
+    return
+
+fi
+
+#
+# spack implementation
+#
+
+
+if [ "$MUSE_COMPILER_E" != "e28" ]; then
+    echo "ERROR - compilier is $MUSE_COMPILER_E , only e28 is supported"
+    return 1
+fi
+
+# use the view link collection directories
+MODE=view
+# don't use the view
+#MODE=""
+# save this to avoid what the env does to it, if MODE!=view
+LDSAVE="$LD_LIBRARY_PATH"
+
+
+if [ "$MUSE_FLAVOR" == "sl7" ]; then
+    spack load scons/tgh74ii
+    spack env activate mu2e-3-14-03-sl7-e28-prof-1
+elif [ "$MUSE_FLAVOR" == "al9" ]; then
+#    spack load scons/s4ccopl
+    spack env activate mu2e-3-14-03-al9-e28-prof-3
+fi
+# this doesn't work yet
+#complete -F _art -o filenames -A file mu2e
+
+if [ $MUSE_VERBOSE -gt 0 ]; then
+    spack env status
+fi
+
+PLIST=$(spack find -p --no-groups | \
+awk '{if(inst=="true") print $0; if($2=="Installed") inst="true";}' \
+| tr "@" " ")
+
+if [ "$MODE" == "view" ]; then
+    # this should point to the default view
+    MUSE_VIEW=$SPACK_ENV/.spack-env/view
+    # this will be used in the link and RPATH
+    export MUSE_LIBRARY_PATH=${MUSE_LIBRARY_PATH:+$MUSE_LIBRARY_PATH:}$MUSE_VIEW/lib:$MUSE_VIEW/lib64:$MUSE_VIEW/lib/root
+    # this is also incomplete
+    export ROOT_INCLUDE_PATH=$ROOT_INCLUDE_PATH:$MUSE_VIEW/include/KinKal/General:$MUSE_VIEW/include/KinKal/Examples:$MUSE_VIEW/include/KinKal/Trajectory
+    export MUSE_VIEW_INC=$MUSE_VIEW/include:$MUSE_VIEW/inc:$MUSE_VIEW/include/root:
+    # we won't use the env library path directly, only via MUSE_LIBRARY_PATH
+    LD_LIBRARY_PATH="$LDSAVE"
+else
+    # remove what the env did to the path
+    # it points to too many builtin libs via the link dir
+    # so it will be managed below
+    LD_LIBRARY_PATH="$LDSAVE"
+fi
+
+for PKGM in art art-root-io canvas cry curl btrk kinkal messagefacility fhicl-cpp hep-concurrency sqlite cetlib cetlib-except nlohmann-json boost clhep root openblas xerces-c intel-tbb-oneapi artdaq-core-mu2e artdaq-core trace gsl postgresql python geant4
+do
+
+    PKG=$PKGM
+    VAR=$(echo $PKG | tr "[a-z]-" "[A-Z]_")_INC
+
+    DDD=$(echo "$PLIST" | \
+        awk -v pkg=$PKG '{ if($1==pkg) print $NF }' | \
+        tail -1 )
+
+    if [ $MUSE_VERBOSE -gt 0 ]; then
+        echo "$PKG DDD=$DDD"
+    fi
+
+    DDI=""
+    DDL=""
+
+    if [ "$PKG" == "root" ]; then
+        DDI=$DDD/include/root
+        DDL=$DDD/lib/root
+    elif [ "$PKG" == "geant4" ]; then
+        export G4INCLUDE=$DDD/include
+        export G4LIB=$DDD/lib64
+        export GEANT4_VERSION=v4_11_1_p02b
+        DDL=$G4LIB
+    elif [ "$PKG" == "intel-tbb-oneapi" ]; then
+        export TBB_INC=$DDD/include
+        DDL=$DDD/lib64
+    elif [ "$PKG" == "fhicl-cpp" ]; then
+        export FHICLCPP_INC=$DDD/include
+        DDL=$DDD/lib
+    elif [ "$PKG" == "cry" ]; then
+        export CRYHOME=$DDD
+        export CRY_LIB=$CRYHOME/lib
+        #DDI=$DDD/include
+        #DDL=$DDD
+    else
+        DDI=$DDD/include
+        DDL=""
+        if [ -d $DDD/lib64 ]; then
+            DDL=$DDD/lib64
+        elif [ -d $DDD/lib ]; then
+            DDL=$DDD/lib
+        fi
+    fi
+
+    if [ "$MODE" != "view" ]; then
+#        for CPKG in $CETLIST
+#        do
+#            if [ "$CPKG" == "$PKG" ]; then
+#                CET_PLUGIN_PATH=${CET_PLUGIN_PATH:+$CET_PLUGIN_PATH:}$DDL
+#                break
+#            fi
+#        done
+
+        if [[ "$DDI" && ! -d $DDI ]]; then
+            echo INC ERROR $PKG $DDI
+        fi
+        eval export ${VAR}=$DDI
+
+        if [ -d $DDI ]; then
+            ROOT_INCLUDE_PATH=${ROOT_INCLUDE_PATH:+$ROOT_INCLUDE_PATH:}$DDI
+        fi
+
+        if [ "$DDL" ]; then
+            if [ -d $DDL ]; then
+                export LD_LIBRARY_PATH=${LD_LIBRARY_PATH:+$LD_LIBRARY_PATH:}$DDL
+            else
+                echo LIB ERROR $PKG $DDL
+            fi
+        fi
+
+        if [[ -d $DDD/bin ]]; then
+            export PATH=${PATH:+$PATH:}$DDD/bin
+        fi
+    fi # end MODE check
+
+done
+
+export MUSE_ART=s128
+export ART_VERSION="v3_14_03"
+export KINKAL_VERSION="v02_05_00b"
+export ROOT_VERSION="v6_28_10a"
+export GEANT4_VERSION="v4_11_1_p02b"
+
+return
+fi
+
+# Local Variables:
+# mode: sh
+# End:
+# vi:syntax=sh
