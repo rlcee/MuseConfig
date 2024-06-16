@@ -164,6 +164,7 @@ do
     elif [ "$PKG" == "cry" ]; then
         export CRYHOME=$DDD
         export CRY_LIB=$CRYHOME/lib
+        export CRYDATAPATH=$CRYHOME/data
         #DDI=$DDD/include
         #DDL=$DDD
     else
@@ -214,6 +215,8 @@ export ART_VERSION="v3_14_03"
 export KINKAL_VERSION="v02_05_00b"
 export ROOT_VERSION="v6_28_10a"
 export GEANT4_VERSION="v4_11_1_p02b"
+export SWIG_VERSION="v4_00_02"
+export FHICLCPP_VERSION="v4_18_03"
 
 return
 fi

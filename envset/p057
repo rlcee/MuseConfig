@@ -225,6 +225,7 @@ elif [ "$MUSE_FLAVOR" == "al9" ]; then
 fi
 export GEANT4_VERSION="v4_11_1_p02b"
 export SWIG_VERSION="v4_00_02"
+export FHICLCPP_VERSION="v4_18_03"
 # in spack this points to a dir, and PYTHON_LIB is this string,
 # but in UPS it is backwards which swig uses. This can be fixed later.
 export PYTHON_LIBDIR=python3.9
