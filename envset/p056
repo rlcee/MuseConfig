@@ -120,7 +120,7 @@ if [ "$MODE" == "view" ]; then
     export MUSE_LIBRARY_PATH=${MUSE_LIBRARY_PATH:+$MUSE_LIBRARY_PATH:}$MUSE_VIEW/lib:$MUSE_VIEW/lib64:$MUSE_VIEW/lib/root
     # this is also incomplete
     export ROOT_INCLUDE_PATH=$ROOT_INCLUDE_PATH:$MUSE_VIEW/include/KinKal/General:$MUSE_VIEW/include/KinKal/Examples:$MUSE_VIEW/include/KinKal/Trajectory
-    export MUSE_VIEW_INC=$MUSE_VIEW/include:$MUSE_VIEW/inc:$MUSE_VIEW/include/root:
+    export MUSE_VIEW_INC=$MUSE_VIEW/include:$MUSE_VIEW/inc:$MUSE_VIEW/include/root:$MUSE_VIEW/include/python3.9
     # we won't use the env library path directly, only via MUSE_LIBRARY_PATH
     LD_LIBRARY_PATH="$LDSAVE"
 else
@@ -164,6 +164,8 @@ do
     elif [ "$PKG" == "cry" ]; then
         export CRYHOME=$DDD
         export CRY_LIB=$CRYHOME/lib
+        export CRYDATAPATH=$CRYHOME/data
+
         #DDI=$DDD/include
         #DDL=$DDD
     else
@@ -214,6 +216,11 @@ export ART_VERSION="v3_14_03"
 export KINKAL_VERSION="v02_05_00b"
 export ROOT_VERSION="v6_28_10a"
 export GEANT4_VERSION="v4_11_1_p02b"
+export SWIG_VERSION="v4_00_02"
+export FHICLCPP_VERSION="v4_18_03"
+# in spack this points to a dir, and PYTHON_LIB is this string,
+# but in UPS it is backwards which swig uses. This can be fixed later.
+export PYTHON_LIBDIR=python3.9
 
 return
 fi
