@@ -1,0 +1,38 @@
+
+if [ "$MU2E_SPACK" ]; then
+
+   if [ "$SPACK_ENV" ]; then
+      echo "An environment is already setup, please use a new process"
+      return 1
+   fi
+
+   spack load metacat/bji63zig
+   spack load data-dispatcher/gzepjbx
+   spack load rucio-clients/er2gkio
+   spack load ifdhc/tyyipwe
+   spack load ifdhc-config/zdyloji
+   spack load sam-web-client/kn5cfgm
+   spack load mdh/trxj2sk
+
+   setup -B mu2egrid v8_03_02
+   setup -B mu2efiletools v5_1
+
+
+else
+
+   setup -B ifdhc v2_7_2
+   setup -B mu2egrid v8_03_02
+   setup -B mu2efiletools v5_1
+
+   setup -B sam_web_client v3_6
+   setup -B mdh v01_05_00
+   if command -v mu2e > /dev/null ; then
+      setup mu2etools v4_05_00
+   fi
+
+fi
+
+# Local Variables:
+# mode: sh
+# End:
+# vi:syntax=sh
